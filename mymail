@@ -3,16 +3,15 @@
 # ./mymail
 # a maildir checker
 #
-# onclick: open mutt
+# onclick: goto workspace "q:mail" and open mutt if not runned
 # author: @qbbr
 
 readonly MAIL_DIR="${HOME}/Mail"
-readonly ACTION="xdotool key alt+4; ps aux | grep -v grep | grep -i mutt || uxterm -T 'mutt ~/Mail' -class 'mutt' -e 'neomutt'"
+readonly ACTION="xdotool key alt+q; ps aux | grep -v grep | grep -i mutt || uxterm -T 'mutt ~/Mail' -class 'mutt' -e 'neomutt'"
 
 count=$(find ${MAIL_DIR}/*/INBOX/new/ -type f | wc -l)
 
 if [[ "${count}" != "0" ]]; then
-	# onclick() => goto workspace "4:mail" and run mutt if not runned
 	echo -en " <action=${ACTION}><fc=#cb4b16><fn=1>\\uf0e0</fn></fc> "
 	echo -n "${count}</action>"
 fi
