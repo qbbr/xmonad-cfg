@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+# ./myping
+# ping indicator for xmobar
+#
+# author: @qbbr
+
+readonly PING_DESTINATION="1.1.1.1"
+value="$(ping -c 3 ${PING_DESTINATION} 2> /dev/null | awk -F '/' 'END {printf "%d", $5}')"
+
+if [[ "${value}" != "0" ]]; then
+    echo -en " <fc=#268bd2><fn=1>\\uf0ac</fn></fc> "
+    echo -n "${value}"
+fi

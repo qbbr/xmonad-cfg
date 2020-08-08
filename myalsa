@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+
+# ./myalsa
+# master/headphone indicators for xmobar
+#
+# onclick: toggle master/headphone
+# author: @qbbr
+
+readonly SCONTROL_MASTER="Master"
+readonly SCONTROL_HEADPHONE="Headphone"
+readonly ACTION="amixer set ${SCONTROL_MASTER} toggle && amixer set ${SCONTROL_HEADPHONE} toggle"
+
+is_on() {
+	amixer get $1 | grep '\[on\]'
+}
+
+get_value() {
+	amixer get $1 | tail -n1 | sed -r 's/.*\[(.*)%\].*/\1/' | tr -d '\n'
+}
+
+echo -n " <action=${ACTION}>"
+
+# master icon + value
+if [[ -n "$(is_on ${SCONTROL_MASTER})" ]]; then
+	echo -en "<fc=#859900><fn=1>\\uf028</fn></fc> "
+	get_value ${SCONTROL_MASTER}
+else
+	echo -en "<fn=1>\\uf026</fn> "
+	echo -n "<fc=#586e75>"
+	get_value ${SCONTROL_MASTER}
+	echo -n "</fc>"
+fi
+
+# headphone icon + value, shown only if not muted
+if [[ -n "$(is_on ${SCONTROL_HEADPHONE})" ]]; then
+	echo -en " <fc=#cb4b16><fn=1>\\uf025</fn></fc> "
+	get_value ${SCONTROL_HEADPHONE}
+	HEADPHONE_ON=1
+fi
+
+echo -n "</action>"
