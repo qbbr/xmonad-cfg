@@ -5,7 +5,15 @@
 ## depends
 
 ```bash
-sudo apt install xmonad libghc-xmonad-dev libghc-xmonad-contrib-dev xmobar
+# xmonad
+sudo apt install xmonad libghc-xmonad-dev libghc-xmonad-contrib-dev
+# xmobar + fonts
+sudo apt install xmobar xfonts-terminus fonts-font-awesome
+# dmenu
+# from repo
+sudo apt install suckless-tools
+# or from git
+git clone http://git.suckless.org/dmenu/ && cd dmenu && sudo make install clean
 ```
 
 ## install
@@ -17,7 +25,12 @@ echo "xmonad" >> .xinitrc
 startx
 ```
 
+## screenshots
+
+[![qbbr-xmonad](https://i.imgur.com/cFNee1El.png)](https://i.imgur.com/cFNee1E.png)
+
 ## links
 
  * [Haskell](https://wiki.haskell.org/Haskell)
  * [Xmonad](https://wiki.haskell.org/Xmonad)
+ * [dmenu](https://tools.suckless.org/dmenu/)
