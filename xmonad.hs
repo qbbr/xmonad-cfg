@@ -127,7 +127,8 @@ myDmenuFont = "terminus:size=12"
 --
 myManageHook = composeAll
     [
-      className =? "Google-chrome"                --> doShift "3:web"
+      className =? "jetbrains-idea"               --> doShift "2:dev"
+    , className =? "Google-chrome"                --> doShift "3:web"
     , className =? "Chromium"                     --> doShift "3:web"
     , className =? "Firefox-esr"                  --> doShift "3:web"
     , className =? "mutt"                         --> doShift "q:mail"
@@ -137,7 +138,7 @@ myManageHook = composeAll
     , className =? "mpv"                          --> doCenterFloat
     , className =? "Pavucontrol"                  --> doCenterFloat
     , className =? "TelegramDesktop"              --> doShift "w:chat"
-    --, className =? "Xchat"                        --> doShift "e:media"
+    --, className =? "Xchat"                        --> doShift "w:chat"
     --, className =? "stalonetray"                  --> doIgnore
     , isFullscreen                                --> (doF W.focusDown <+> doFullFloat)
     -- , isFullscreen                             --> doFullFloat
