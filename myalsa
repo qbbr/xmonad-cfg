@@ -35,7 +35,6 @@ fi
 if [[ -n "$(is_on ${SCONTROL_HEADPHONE})" ]]; then
 	echo -en " <fc=#cb4b16><fn=1>\\uf025</fn></fc> "
 	get_value ${SCONTROL_HEADPHONE}
-	HEADPHONE_ON=1
 fi
 
 echo -n "</action>"
