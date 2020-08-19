@@ -11,7 +11,7 @@ Config {
        , position = TopW L 100
        , sepChar = "%"
        , alignSep = "}{"
-       , template = "%StdinReader% }{ %multicpu% %thermal0% %memory% %disku% %battery%%dynnetwork%%myping%%mymail%%myalsa% %date% %kbd%"
+       , template = "%StdinReader% }{ %multicpu% %thermal0% %memory% %disku% %battery%%dynnetwork%%myping%%mymail%%myalsa% %date% %kbd%%mytrayerpadding%"
        , commands = [
                     Run MultiCpu [ "-t", "<fc=#d33682><fn=1>\xf0e4</fn></fc> <total0>%<fc=#586e75>, </fc><total1>%"
                                  , "-L", "10"
@@ -95,6 +95,8 @@ Config {
                     --, Run Com "date" ["+[%a] %b %H:%M"] "mydate" 600
                     --, Run DateZone "%a %H:%M:%S" "de_DE.UTF-8" "Europe/Vienna" "viennaTime" 10
                     --, Run DateZone "%H:%M Z" "en_US" "GMT" "utc" 10
+
+                    , Run Com "/home/qbbr/.xmonad/mytrayerpadding" [] "mytrayerpadding" 10
                     , Run StdinReader
 
                     , Run Kbd [ ("ru", "<fc=#eee8d5,#b58900>{ RU }</fc>")

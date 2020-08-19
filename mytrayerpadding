@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+
+# ./mytayerpadding
+#
+# creating XPM icon for fake padding xmobar with trayer width
+#
+# trayer:
+#   trayer --edge top --align right --height 18 --padding 0 --widthtype request --tint 0x002b36 --distancefrom right --distance 1 --expand true
+#
+# xmonad:
+#   command: Run Com "/home/qbbr/.xmonad/mytrayerpadding" [] "mytrayerpadding" 10
+#   template: %mytrayerpadding%
+#
+# author: @qbbr
+
+# https://en.wikipedia.org/wiki/X_PixMap
+xpm_icon () {
+	local width=$1
+	local icon=$2
+	cat << EOF > "${icon}"
+/* XPM */
+/* timestamp: $(date +'%s') */
+static char* mytayerpadding[] = {
+/* Values: <width> <height> <number of colors> <number of chars per pixel> */
+"${width} 1 1 1",
+/* Color: <char> <c> <color (none: transparent)> */
+". c none",
+/* Pixels: */
+"$(for i in $(seq ${width}); do echo -n '.'; done)"
+};
+EOF
+}
+
+width=$(xprop -name panel 2> /dev/null | grep 'program specified minimum size' | cut -d ' ' -f 5)
+
+if [[ -z "${width}" ]]; then
+	width="0"
+else
+	((width = width + 5))
+fi
+
+icon="/tmp/mytrayerpadding-${width}.xpm"
+
+if [[ ! -f "${icon}" ]]; then
+    xpm_icon "${width}" "${icon}"
+fi
+
+echo -n "<icon=${icon}/>"
