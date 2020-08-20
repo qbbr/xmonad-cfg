@@ -138,6 +138,7 @@ myManageHook = composeAll
     , className =? "mpv"                          --> doCenterFloat
     , className =? "Pavucontrol"                  --> doCenterFloat
     , className =? "TelegramDesktop"              --> doShift "w:chat"
+    , className =? "Keepassx"                     --> doShift "d:"
     --, className =? "Xchat"                        --> doShift "w:chat"
     --, className =? "stalonetray"                  --> doIgnore
     , isFullscreen                                --> (doF W.focusDown <+> doFullFloat)
