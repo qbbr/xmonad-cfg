@@ -38,9 +38,10 @@ import XMonad.Util.EZConfig(additionalKeys)
 import XMonad.Util.Cursor
 
 import Graphics.X11.ExtraTypes.XF86
+import Graphics.X11.Xlib.Extras
 import qualified XMonad.StackSet as W
 import qualified Data.Map        as M
-
+import Foreign.C.Types (CLong)
 
 ------------------------------------------------------------------------
 -- CMDs
@@ -143,7 +144,28 @@ myManageHook = composeAll
     --, className =? "stalonetray"                  --> doIgnore
     , isFullscreen                                --> (doF W.focusDown <+> doFullFloat)
     -- , isFullscreen                             --> doFullFloat
-    ]
+    ] <+> manageMenus <+> manageDialogs
+
+
+-- Helper to read a property
+getProp :: Atom -> Window -> X (Maybe [CLong])
+getProp a w = withDisplay $ \dpy -> io $ getWindowProperty32 dpy a w
+
+-- Check window prop
+checkAtom :: String -> String -> Query Bool
+checkAtom name value = ask >>= \w -> liftX $ do
+    a <- getAtom name
+    val <- getAtom value
+    mbr <- getProp a w
+    case mbr of
+        Just [r] -> return $ elem (fromIntegral r) [val]
+        _ -> return False
+
+checkDialog = checkAtom "_NET_WM_WINDOW_TYPE" "_NET_WM_WINDOW_TYPE_DIALOG"
+checkMenu = checkAtom "_NET_WM_WINDOW_TYPE" "_NET_WM_WINDOW_TYPE_MENU"
+manageMenus = checkMenu --> doFloat
+manageDialogs = checkDialog --> doFloat
+
 
 ------------------------------------------------------------------------
 -- Layouts
