@@ -130,6 +130,8 @@ myManageHook = composeAll
     [
       className =? "jetbrains-idea"               --> doShift "2:dev"
     , title     =? "win0"                         --> (doCenterFloat <+> doShift "2:dev")
+    , title     =? "Java"                         --> doShift "2:dev"
+    , className =? "processing-app-Base"          --> doShift "2:dev"
     , className =? "Google-chrome"                --> doShift "3:web"
     , className =? "Chromium"                     --> doShift "3:web"
     , className =? "Firefox-esr"                  --> doShift "3:web"
