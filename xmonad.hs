@@ -61,7 +61,18 @@ myLauncher = "dmenu_run"
 ------------------------------------------------------------------------
 -- Workspaces
 --
-myWorkspaces = ["1:term", "2:dev", "3:web", "q:mail", "w:chat", "e:media", "a:", "s:", "d:"]-- ++ map show [7..9]
+xmobarEscape = concatMap doubleLts
+  where doubleLts '<' = "<<"
+        doubleLts x   = [x]
+
+myWorkspaces :: [String]
+--myWorkspaces = ["1:term", "2:dev", "3:web", "q:mail", "w:chat", "e:media", "a:", "s:", "d:"]
+myWorkspaces = clickable . (map xmobarEscape) $ ["1:term", "2:dev", "3:web", "q:mail", "w:chat", "e:media", "a:", "s:", "d:"]-- ++ map show [7..9]
+  where
+    clickable l = ["<action=xdotool key alt+" ++ show (n) ++ ">" ++ ws ++ "</action>" |
+                    (i,ws) <- zip ['1', '2', '3', 'q', 'w', 'e', 'a', 's', 'd'] l,
+                    let n = i
+                  ]
 
 
 ------------------------------------------------------------------------
