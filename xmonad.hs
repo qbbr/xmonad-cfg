@@ -41,6 +41,7 @@ import Graphics.X11.ExtraTypes.XF86
 import Graphics.X11.Xlib.Extras
 import qualified XMonad.StackSet as W
 import qualified Data.Map        as M
+import Data.Maybe
 import Foreign.C.Types (CLong)
 
 ------------------------------------------------------------------------
@@ -61,18 +62,8 @@ myLauncher = "dmenu_run"
 ------------------------------------------------------------------------
 -- Workspaces
 --
-xmobarEscape = concatMap doubleLts
-  where doubleLts '<' = "<<"
-        doubleLts x   = [x]
-
 myWorkspaces :: [String]
---myWorkspaces = ["1:term", "2:dev", "3:web", "q:mail", "w:chat", "e:media", "a:", "s:", "d:"]
-myWorkspaces = clickable . (map xmobarEscape) $ ["1:term", "2:dev", "3:web", "q:mail", "w:chat", "e:media", "a:", "s:", "d:"]-- ++ map show [7..9]
-  where
-    clickable l = ["<action=xdotool key alt+" ++ show (n) ++ ">" ++ ws ++ "</action>" |
-                    (i,ws) <- zip ['1', '2', '3', 'q', 'w', 'e', 'a', 's', 'd'] l,
-                    let n = i
-                  ]
+myWorkspaces = ["1:term", "2:dev", "3:web", "q:mail", "w:chat", "e:media", "a:", "s:", "d:"]
 
 
 ------------------------------------------------------------------------
@@ -138,27 +129,28 @@ myDmenuFont = "terminus:size=12"
 -- 'className' and 'resource' are used below.
 --
 myManageHook = composeAll
-    [
-      className =? "jetbrains-idea"               --> doShift "2:dev"
-    , title     =? "win0"                         --> (doCenterFloat <+> doShift "2:dev")
-    , title     =? "Java"                         --> doShift "2:dev"
-    , className =? "processing-app-Base"          --> doShift "2:dev"
-    , className =? "Google-chrome"                --> doShift "3:web"
-    , className =? "Chromium"                     --> doShift "3:web"
-    , className =? "Firefox-esr"                  --> doShift "3:web"
-    , className =? "mutt"                         --> doShift "q:mail"
-    , resource  =? "desktop_window"               --> doIgnore
-    , className =? "Gpick"                        --> doCenterFloat
-    , resource  =? "feh"                          --> doCenterFloat
-    , className =? "mpv"                          --> doCenterFloat
-    , className =? "Pavucontrol"                  --> doCenterFloat
-    , className =? "TelegramDesktop"              --> doShift "w:chat"
-    , className =? "Keepassx"                     --> doShift "d:"
-    --, className =? "Xchat"                        --> doShift "w:chat"
-    --, className =? "stalonetray"                  --> doIgnore
-    , isFullscreen                                --> (doF W.focusDown <+> doFullFloat)
-    -- , isFullscreen                             --> doFullFloat
-    ] <+> manageMenus <+> manageDialogs
+  [
+    className =? "jetbrains-idea"               --> doShift "2:dev"
+  , title     =? "win0"                         --> (doCenterFloat <+> doShift "2:dev")
+  , title     =? "Java"                         --> doShift "2:dev"
+  , className =? "processing-app-Base"          --> doShift "2:dev"
+  , className =? "Google-chrome"                --> doShift "3:web"
+  , className =? "Chromium"                     --> doShift "3:web"
+  , className =? "Firefox-esr"                  --> doShift "3:web"
+  , className =? "mutt"                         --> doShift "q:mail"
+  , resource  =? "desktop_window"               --> doIgnore
+  , className =? "Gpick"                        --> doCenterFloat
+  , resource  =? "feh"                          --> doCenterFloat
+  , className =? "mpv"                          --> doCenterFloat
+  , className =? "Pavucontrol"                  --> doCenterFloat
+  , className =? "Lxappearance"                 --> doCenterFloat
+  , className =? "TelegramDesktop"              --> doShift "w:chat"
+  , className =? "Keepassx"                     --> doShift "d:"
+  --, className =? "Xchat"                        --> doShift "w:chat"
+  --, className =? "stalonetray"                  --> doIgnore
+  , isFullscreen                                --> (doF W.focusDown <+> doFullFloat)
+  -- , isFullscreen                             --> doFullFloat
+  ] <+> manageMenus <+> manageDialogs
 
 
 -- Helper to read a property
@@ -168,17 +160,21 @@ getProp a w = withDisplay $ \dpy -> io $ getWindowProperty32 dpy a w
 -- Check window prop
 checkAtom :: String -> String -> Query Bool
 checkAtom name value = ask >>= \w -> liftX $ do
-    a <- getAtom name
-    val <- getAtom value
-    mbr <- getProp a w
-    case mbr of
-        Just [r] -> return $ elem (fromIntegral r) [val]
-        _ -> return False
+  a <- getAtom name
+  val <- getAtom value
+  mbr <- getProp a w
+  case mbr of
+    Just [r] -> return $ elem (fromIntegral r) [val]
+    _ -> return False
 
 checkDialog = checkAtom "_NET_WM_WINDOW_TYPE" "_NET_WM_WINDOW_TYPE_DIALOG"
 checkMenu = checkAtom "_NET_WM_WINDOW_TYPE" "_NET_WM_WINDOW_TYPE_MENU"
 manageMenus = checkMenu --> doFloat
 manageDialogs = checkDialog --> doFloat
+
+-- On workspace clicked
+clickable :: [(WorkspaceId, Char)] -> WorkspaceId -> String
+clickable ws w = fromMaybe w $ (\x -> xmobarAction ("xdotool key alt+" ++ show x) "1" w) <$> lookup w ws
 
 
 ------------------------------------------------------------------------
@@ -194,10 +190,10 @@ manageDialogs = checkDialog --> doFloat
 myGaps = gaps [(U, outerGaps), (R, outerGaps), (L, outerGaps), (D, outerGaps)]
 addSpace = renamed [CutWordsLeft 2]-- . spacing gap
 tab = avoidStruts
-    $ renamed [Replace "T"]
-    $ addTopBar
-    $ myGaps
-    $ tabbed shrinkText myTabTheme
+  $ renamed [Replace "T"]
+  $ addTopBar
+  $ myGaps
+  $ tabbed shrinkText myTabTheme
 
 layouts = avoidStruts (
             (
@@ -218,51 +214,51 @@ myLayout = smartBorders
          $ layouts
 
 myNav2DConf = def
-    { defaultTiledNavigation    = centerNavigation
-    , floatNavigation           = centerNavigation
-    , screenNavigation          = lineNavigation
-    , layoutNavigation          = [("Full", centerNavigation)
-    -- line/center same results   ,("Tabs", lineNavigation)
-    --                            ,("Tabs", centerNavigation)
-                                  ]
-    , unmappedWindowRect        = [("Full", singleWindowRect)
-    -- works but breaks tab deco  ,("Tabs", singleWindowRect)
-    -- doesn't work but deco ok   ,("Tabs", fullScreenRect)
-                                  ]
-    }
+  { defaultTiledNavigation    = centerNavigation
+  , floatNavigation           = centerNavigation
+  , screenNavigation          = lineNavigation
+  , layoutNavigation          = [("Full", centerNavigation)
+  -- line/center same results   ,("Tabs", lineNavigation)
+  --                            ,("Tabs", centerNavigation)
+                                ]
+  , unmappedWindowRect        = [("Full", singleWindowRect)
+  -- works but breaks tab deco  ,("Tabs", singleWindowRect)
+  -- doesn't work but deco ok   ,("Tabs", fullScreenRect)
+                                ]
+  }
 
 
 -- this is a "fake title" used as a highlight bar in lieu of full borders
 -- (I find this a cleaner and less visually intrusive solution)
 topBarTheme = def
-    {
-      fontName              = myFont
-    , inactiveBorderColor   = base03
-    , inactiveColor         = base03
-    , inactiveTextColor     = base03
-    , activeBorderColor     = blue
-    , activeColor           = blue
-    , activeTextColor       = blue
-    , urgentBorderColor     = orange
-    , urgentColor           = orange
-    , urgentTextColor       = base3
-    , decoHeight            = topbarHeight
-    }
+  {
+    fontName              = myFont
+  , inactiveBorderColor   = base03
+  , inactiveColor         = base03
+  , inactiveTextColor     = base03
+  , activeBorderColor     = blue
+  , activeColor           = blue
+  , activeTextColor       = blue
+  , urgentBorderColor     = orange
+  , urgentColor           = orange
+  , urgentTextColor       = base3
+  , decoHeight            = topbarHeight
+  }
 
 addTopBar =  noFrillsDeco shrinkText topBarTheme
 
 myTabTheme = def
-    { fontName              = myFont
-    , activeColor           = blue
-    , activeBorderColor     = blue
-    , activeTextColor       = base2
-    , inactiveColor         = base03
-    , inactiveBorderColor   = base03
-    , inactiveTextColor     = base00
-    , urgentBorderColor     = orange
-    , urgentColor           = orange
-    , urgentTextColor       = base3
-    }
+  { fontName              = myFont
+  , activeColor           = blue
+  , activeBorderColor     = blue
+  , activeTextColor       = base2
+  , inactiveColor         = base03
+  , inactiveBorderColor   = base03
+  , inactiveTextColor     = base00
+  , urgentBorderColor     = orange
+  , urgentColor           = orange
+  , urgentTextColor       = base3
+  }
 
 
 ------------------------------------------------------------------------
@@ -529,10 +525,10 @@ myMouseBindings (XConfig {XMonad.modMask = modMask}) = M.fromList $
 --
 -- By default, do nothing.
 myStartupHook = do
-    setWMName "LG3D"
-    spawn "notify-send -a 'xmonad' ' ' 'started'"
-    --spawn     "bash ~/.xmonad/startup.sh"
-    --setDefaultCursor xC_left_ptr
+  setWMName "LG3D"
+  spawn "notify-send -a 'xmonad' ' ' 'started'"
+  --spawn     "bash ~/.xmonad/startup.sh"
+  --setDefaultCursor xC_left_ptr
 
 
 ------------------------------------------------------------------------
@@ -541,11 +537,11 @@ myStartupHook = do
 data LibNotifyUrgencyHook = LibNotifyUrgencyHook deriving (Read, Show)
 
 instance UrgencyHook LibNotifyUrgencyHook where
-    urgencyHook LibNotifyUrgencyHook w = do
-        name     <- getName w
-        Just idx <- fmap (W.findTag w) $ gets windowset
-        --spawn "notify-send test"
-        safeSpawn "notify-send" ["-a", "xmonad", "on workspace [" ++ idx ++ "]", show name]
+  urgencyHook LibNotifyUrgencyHook w = do
+    name     <- getName w
+    Just idx <- fmap (W.findTag w) $ gets windowset
+    --spawn "notify-send test"
+    safeSpawn "notify-send" ["-a", "xmonad", "on workspace [" ++ idx ++ "]", show name]
 
 
 ------------------------------------------------------------------------
@@ -568,7 +564,6 @@ main = do
     $ withUrgencyHook LibNotifyUrgencyHook
     -- $ pagerHints -- uncomment to use taffybar
     $ def {
-      -- simple stuff
       terminal           = myTerminal
     , focusFollowsMouse  = myFocusFollowsMouse
     , borderWidth        = myBorderWidth
@@ -581,7 +576,7 @@ main = do
     , mouseBindings      = myMouseBindings
       -- hooks, layouts
     , layoutHook         = myLayout
-    , logHook = dynamicLogWithPP (myPP xmproc)
+    , logHook            = dynamicLogWithPP (myPP xmproc)
              -- >> updatePointer (x, y) (1, 1)
              -- >> updatePointer (Relative 1 1)
              -- >> updatePointer (0.75, 0.75) (0.75, 0.75)
@@ -595,7 +590,7 @@ main = do
       myPP xmproc = def
         {
           ppCurrent = xmobarColor base2 blue . wrap " " " "
-        , ppHidden  = xmobarColor base00 base03 . wrap " " " "
+        , ppHidden  = xmobarColor base00 base03 . wrap " " " " . clickable (zip myWorkspaces ['1', '2', '3', 'q', 'w', 'e', 'a', 's', 'd'])
         , ppUrgent  = xmobarColor base2 orange . wrap " " " "
         , ppSep     = " "
         , ppWsSep   = ""
