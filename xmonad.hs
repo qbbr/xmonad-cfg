@@ -137,6 +137,7 @@ myManageHook = composeAll
   , className =? "Google-chrome"                --> doShift "3:web"
   , className =? "Chromium"                     --> doShift "3:web"
   , className =? "Firefox-esr"                  --> doShift "3:web"
+  , className =? "Firefox"                      --> doShift "3:web"
   , className =? "mutt"                         --> doShift "q:mail"
   , resource  =? "desktop_window"               --> doIgnore
   , className =? "Gpick"                        --> doCenterFloat
@@ -297,13 +298,19 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList $
   -- Mute volume.
   , ((0, xF86XK_AudioMute),
      spawn "volume-control --dzen --toggle")
+  , ((controlMask, 0xffad), -- ctrl+num-
+     spawn "volume-control --dzen --toggle")
 
   -- Decrease volume.
   , ((0, xF86XK_AudioLowerVolume),
      spawn "volume-control --dzen --decrement 5")
+  , ((controlMask, 0xffaf), -- ctrl+num/
+     spawn "volume-control --dzen --decrement 5")
 
   -- Increase volume.
   , ((0, xF86XK_AudioRaiseVolume),
+     spawn "volume-control --dzen --increment 5")
+  , ((controlMask, 0xffaa), -- ctrl+num*
      spawn "volume-control --dzen --increment 5")
 
   -- Decrement brightness
@@ -313,6 +320,30 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList $
   -- Increase brightness
   , ((0, xF86XK_MonBrightnessUp),
      spawn "backlight-brightness-control --dzen --increment")
+
+  -- Mixer toggle headphone<->front (ctrl+num+)
+  , ((controlMask, 0xffab),
+     spawn "amixer -c 0 set Headphone toggle && amixer -c 0 set Front toggle")
+
+  -- MPD next (ctrl+num6)
+  , ((controlMask, 0xff98),
+     spawn "mpc next")
+
+  -- MPD prev (ctrl+num4)
+  , ((controlMask, 0xff96),
+     spawn "mpc prev")
+
+  -- MPD play/pause (ctrl+num5)
+  , ((controlMask, 0xff9d),
+     spawn "mpc toggle")
+
+  -- MPD seek+ (ctrl+num9)
+  , ((controlMask, 0xff9a),
+     spawn "mpc seek +5")
+
+  -- MPD seek- (ctrl+num7)
+  , ((controlMask, 0xff95),
+     spawn "mpc seek -5")
 
   -- Audio previous.
   --, ((0, 0x1008FF16),
