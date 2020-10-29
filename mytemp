@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+# ./mytemp
+# get cpu temperature
+#
+# depends: sensors
+# author: @qbbr
+
+temp=$(sensors | grep 'CPU Temperature' | awk '{print $3}' | cut -c 2-3)
+hitemp=65
+
+echo -en "<fc=#cb4b16><fn=1>\\uf2cb</fn></fc> "
+
+if [[ ${temp} -gt ${hitemp} ]]; then
+	echo -n "<fc=#cb4b16>${temp}</fc>"
+else
+	echo -n "${temp}"
+fi
+
+echo -n "°C"
