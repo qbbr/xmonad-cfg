@@ -108,8 +108,8 @@ outerGaps    = 0
 topbarHeight = 1
 
 -- Fonts
-myFont      = "xft:terminus:size=10"
-myDmenuFont = "terminus:size=12"
+myFont      = "xft:Hack:size=10"
+myDmenuFont = "xft:Hack:size=10"
 --myFont2    = "xft:terminus:size=10:hinting=false:antialias=false"
 --myBoldFont = "xft:terminus:size=10:bold"
 

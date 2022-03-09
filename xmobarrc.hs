@@ -1,6 +1,6 @@
 -- https://hackage.haskell.org/package/xmobar
 Config {
-       font = "xft:terminus:size=10"
+       font = "xft:Hack:size=10"
        , additionalFonts = [ "xft:FontAwesome:size=10" ]
        , allDesktops = True
        , bgColor = "#002b36"
