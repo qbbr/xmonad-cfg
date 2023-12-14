@@ -1,7 +1,5 @@
 # xmonad-cfg
 
-[![Stand With Ukraine](https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/badges/StandWithUkraine.svg)](https://github.com/vshymanskyy/StandWithUkraine/blob/main/docs/README.md)
-
 [xmonad](https://hackage.haskell.org/package/xmonad) + [xmobar](https://hackage.haskell.org/package/xmobar) at solarized dark theme \w tabs and hoOkers
 
 ## depends
